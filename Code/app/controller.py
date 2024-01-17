@@ -1,0 +1,1 @@
+## core functions for the app , like routes we want to use, and logic of the app
