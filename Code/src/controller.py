@@ -3,14 +3,16 @@ from flask import render_template, url_for, request, redirect, Flask
 import bcrypt
 from app import app
 from .database import db
-from .models import User, Librarian, Book, Review, BookIssue, Section
-
+from .models import User, Librarian, Book, Review, BookIssue, Section 
+from datetime import datetime, timedelta
 ## MAIN PAGE ROUTES
 
 ## Home page
 @app.route('/')
 def index():
     return render_template('index.html')
+
+### LIBRARIAN ROUTES
 
 ## Librarian registeration
 @app.route('/librarian/register', methods=['POST', 'GET'])
@@ -112,6 +114,8 @@ def librarian_add_section():
 def librarian_dashboard():
     return render_template('librarian_dashboard.html')
 
+### USER ROUTES
+
 ## User registeration
 @app.route('/user/register', methods=['POST', 'GET'])
 def user_register():
@@ -153,9 +157,9 @@ def user_login():
 def user_dashboard():
     return render_template('user_dashboard.html')
 
-## 
+### BOOK ROUTES
 
-## Get book
+## Get book , also them to request books
 @app.route('/book/<int:id>', methods=['POST', 'GET'])
 def book(id):
     book = Book.query.get_or_404(id)
@@ -163,14 +167,22 @@ def book(id):
         user_id = request.form['user_id']
         book_id = request.form['book_id']
         librarian_id = request.form['librarian_id']
-        status = "ISSUED"
-        book_issue = BookIssue(user_id=user_id, book_id=book_id, librarian_id=librarian_id, status=status)
-        try:
-            db.session.add(book_issue)
-            db.session.commit()
-            return redirect(url_for('/book/<id>'))
-        except:
-            return 'There was an issue adding the book'
+        status = "REQUESTED"
+        ## MIGHT NEED TO CHECK THE USER'S BOOKS BORROWED
+         ## MIGHT NEED TO ADD THE BOOKS TO THE USER'S BOOKS BORROWED
+        user = User.query.get_or_404(book_issue.user_id)
+        total_books_borrowed = user.total_books_borrowed
+        if total_books_borrowed <5:
+            book_issue = BookIssue(user_id=user_id, book_id=book_id, librarian_id=librarian_id, status=status)
+            try:
+                db.session.add(book_issue)
+                db.session.commit()
+                return redirect(url_for('/book/<id>'))
+            except:
+                return 'There was an issue adding the book'
+        else:        
+            return 'You have reached the maximum limit of books borrowed'
+        
     else:
         return render_template('book.html', book=book)
 
@@ -211,3 +223,102 @@ def review_book(id):
             db.session.commit()
         except:
             return 'There was an issue adding the review'
+
+## Issue book
+@app.route('librarian/issue_book/<int:id>', methods=['POST'])
+def issue_book(id):
+    book_issue = BookIssue.query.get_or_404(id)
+    if request.method == 'POST':
+        ## Check if the book is indeed issued to the user
+        ## If yes, then render the view_book.html
+        ## Else, redirect to the book page
+
+        user = User.query.get_or_404(book_issue.user_id)
+        total_books_borrowed = user.total_books_borrowed
+        if total_books_borrowed >= 5:
+            book_issue.status = "REJECTED"
+            return 'User has reached the maximum limit of books borrowed'
+        
+        book_issue.status = "ISSUED"
+        book_issue.date_issued = datetime.utcnow()
+        book_issue.return_date = datetime.utcnow() + timedelta(days=7)
+
+        ## MIGHT NEED TO ADD THE BOOKS TO THE USER'S BOOKS BORROWED
+        user.total_books_borrowed += 1
+
+        try:
+            db.session.commit()
+        except:
+            return 'There was an issue issuing the book'
+
+## Reject book
+@app.route('librarian/reject_book/<int:id>', methods=['POST'])
+def reject_book(id):
+    book_issue = BookIssue.query.get_or_404(id)
+    if request.method == 'POST':
+        ## Check if the book is indeed issued to the user
+        ## If yes, then render the view_book.html
+        ## Else, redirect to the book page
+        book_issue.status = "REJECTED"
+        try:
+            db.session.commit()
+        except:
+            return 'There was an issue rejecting the book request'
+        
+          
+## Return book
+@app.route('librarian/return_book/<int:id>', methods=['POST'])
+def return_book(id):
+    book_issue = BookIssue.query.get_or_404(id)
+    if request.method == 'POST':
+        ## Check if the book is indeed issued to the user
+        ## If yes, then render the view_book.html
+        ## Else, redirect to the book page
+
+        current_date = datetime.utcnow()
+
+        if current_date > book_issue.return_date:
+            book_issue.status = "REVOKED"
+            return 'Return date passed, book revoked'
+       
+        book_issue.status = "RETURNED"
+       
+        try:
+            db.session.commit()
+        except:
+            return 'There was an issue issuing the book'
+       
+## Revoke book
+@app.route('librarian/revoke_book/<int:id>', methods=['POST'])
+def revoke_book(id):
+    book_issue = BookIssue.query.get_or_404(id)
+    if request.method == 'POST':
+        ## Check if the book is indeed issued to the user
+        ## If yes, then render the view_book.html
+        ## Else, redirect to the book page
+
+        current_date = datetime.utcnow()
+
+        if current_date < book_issue.return_date:
+            return 'Return date not yet passed , cannot revoke the book'
+       
+        book_issue.status = "REVOKED"
+       
+        try:
+            db.session.commit()
+        except:
+            return 'There was an issue issuing the book'
+
+## Remove Book 
+        
+## Remove Section
+
+### GET ONLY ROUTES
+    
+## Search book by name
+        
+## Search book by author
+        
+## Search book by section
+        
+## Get book for a section
