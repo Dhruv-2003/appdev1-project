@@ -8,6 +8,5 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 db = SQLAlchemy(app)
 app.app_context().push()
 
-
 if __name__  == '__main__':
     app.run(debug=True)
