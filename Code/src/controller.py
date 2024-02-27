@@ -310,15 +310,47 @@ def revoke_book(id):
             return 'There was an issue issuing the book'
 
 ## Remove Book 
-        
+@app.route('librarian/remove_book/<int:id>', methods=['POST']) 
+def remove_book(id):
+    book = Book.query.get_or_404(id)
+    if request.method == 'POST':
+        try:
+            db.session.delete(book)
+            db.session.commit()
+        except:
+            return 'There was an issue removing the book'       
+
 ## Remove Section
+@app.route('librarian/remove_section/<int:id>', methods=['POST'])
+def remove_section(id):
+    section = Section.query.get_or_404(id)
+    if request.method == 'POST':
+        try:
+            db.session.delete(section)
+            db.session.commit()
+        except:
+            return 'There was an issue removing the section'
 
 ### GET ONLY ROUTES
     
 ## Search book by name
+@app.route('search_book_by_name', methods=['GET'])
+def search_book_by_name():
+    name = request.form['name']
+    books = Book.query.filter_by(Book.name.like(f"%{name}%")).all()
+    return render_template('index.html', books=books)
         
 ## Search book by author
+@app.route('search_book_by_author', methods=['GET'])
+def search_book_by_author():
+    author = request.form['author']
+    books = Book.query.filter_by(Book.authors.like(f"%{author}%")).all()
+    return render_template('index.html', books=books)
         
-## Search book by section
-        
+
 ## Get book for a section
+@app.route('get_section_books/<string:section>', methods=['GET'])
+def get_section_books(section):
+    section = Section.query.filter_by(name=section).first()
+    books = section.books
+    return render_template('index.html', books=books)
