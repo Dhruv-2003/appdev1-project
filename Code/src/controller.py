@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 ## Home page
 @app.route('/')
 def index():
+    # fetch all the books directly for all the sections
     return render_template('index.html')
 
 ### LIBRARIAN ROUTES
@@ -29,7 +30,7 @@ def librarian_register():
         except:
             return 'There was an issue adding the librarian'
     else:
-        return render_template('librarian_register.html')
+        return render_template('librarian/register.html')
 
 ## Librarian login
 @app.route('/librarian/login', methods=['POST', 'GET'])
@@ -48,7 +49,7 @@ def librarian_login():
         else:
             return 'Invalid Username'
     else:
-        return render_template('librarian_login.html')
+        return render_template('librarian/login.html')
     
 ## Librarian add book
 @app.route('/librarian/add_book', methods=['POST', 'GET'])
@@ -70,7 +71,7 @@ def librarian_add_book():
         except:
             return 'There was an issue adding the book'
     else:
-        return render_template('librarian_add_book.html')
+        return render_template('librarian/add_book.html')
 
 ## Librarian edit book
 @app.route('/librarian/edit_book/<int:id>', methods=['POST', 'GET'])
@@ -90,7 +91,7 @@ def librarian_edit_book():
         except:
             return 'There was an issue editing the book'
     else:
-        return render_template('librarian_edit_book.html', book=book)
+        return render_template('librarian/edit_book.html', book=book)
 
 ## Librarian add section
 @app.route('/librarian/add_section', methods=['POST', 'GET'])
@@ -107,12 +108,12 @@ def librarian_add_section():
         except:
             return 'There was an issue adding the section'
     else:
-        return render_template('librarian_add_section.html')
+        return render_template('librarian/add_section.html')
 
 ## Librarian dashboard
 @app.route('/librarian/dashboard')
 def librarian_dashboard():
-    return render_template('librarian_dashboard.html')
+    return render_template('librarian/dashboard.html')
 
 ### USER ROUTES
 
@@ -131,7 +132,7 @@ def user_register():
         except:
             return 'There was an issue adding the user'
     else:
-        return render_template('user_register.html')
+        return render_template('user/register.html')
 
 ## User login
 @app.route('/user/login', methods=['POST', 'GET'])
@@ -149,13 +150,13 @@ def user_login():
         else:
             return 'Invalid Username'
     else:
-        return render_template('user_login.html')
+        return render_template('user/login.html')
     
 
 ## User dashboard
 @app.route('/user/dashboard')
 def user_dashboard():
-    return render_template('user_dashboard.html')
+    return render_template('user/dashboard.html')
 
 ### BOOK ROUTES
 
@@ -187,28 +188,28 @@ def book(id):
         return render_template('book.html', book=book)
 
 ## View Book
-@app.route('user/view_book/<int:id>', methods=['POST', 'GET'])
+@app.route('/user/view_book/<int:id>', methods=['POST', 'GET'])
 def view_book(id):
     book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
     ## If yes, then render the view_book.html
     ## Else, redirect to the book page
-    return render_template('view_book.html', book=book)
+    return render_template('book/view.html', book=book)
 
 ## Read book
-@app.route('user/read_book/<int:id>', methods=['POST', 'GET'])
+@app.route('/user/read_book/<int:id>', methods=['POST', 'GET'])
 def read_book(id):
     book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
     ## If yes, then render the view_book.html
     ## Else, redirect to the book page
-    return render_template('read_book.html', book=book)
+    return render_template('book/read.html', book=book)
 
 
 ## POST ONLY ROUTE
 
 ## Review book
-@app.route('user/review_book/<int:id>', methods=['POST'])
+@app.route('/user/review_book/<int:id>', methods=['POST'])
 def review_book(id):
     if request.method == 'POST':
         ## Check if the book is indeed issued to the user
@@ -225,7 +226,7 @@ def review_book(id):
             return 'There was an issue adding the review'
 
 ## Issue book
-@app.route('librarian/issue_book/<int:id>', methods=['POST'])
+@app.route('/librarian/issue_book/<int:id>', methods=['POST'])
 def issue_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -252,7 +253,7 @@ def issue_book(id):
             return 'There was an issue issuing the book'
 
 ## Reject book
-@app.route('librarian/reject_book/<int:id>', methods=['POST'])
+@app.route('/librarian/reject_book/<int:id>', methods=['POST'])
 def reject_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -267,7 +268,7 @@ def reject_book(id):
         
           
 ## Return book
-@app.route('librarian/return_book/<int:id>', methods=['POST'])
+@app.route('/librarian/return_book/<int:id>', methods=['POST'])
 def return_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -289,7 +290,7 @@ def return_book(id):
             return 'There was an issue issuing the book'
        
 ## Revoke book
-@app.route('librarian/revoke_book/<int:id>', methods=['POST'])
+@app.route('/librarian/revoke_book/<int:id>', methods=['POST'])
 def revoke_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -310,7 +311,7 @@ def revoke_book(id):
             return 'There was an issue issuing the book'
 
 ## Remove Book 
-@app.route('librarian/remove_book/<int:id>', methods=['POST']) 
+@app.route('/librarian/remove_book/<int:id>', methods=['POST']) 
 def remove_book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
@@ -321,7 +322,7 @@ def remove_book(id):
             return 'There was an issue removing the book'       
 
 ## Remove Section
-@app.route('librarian/remove_section/<int:id>', methods=['POST'])
+@app.route('/librarian/remove_section/<int:id>', methods=['POST'])
 def remove_section(id):
     section = Section.query.get_or_404(id)
     if request.method == 'POST':
@@ -334,14 +335,14 @@ def remove_section(id):
 ### GET ONLY ROUTES
     
 ## Search book by name
-@app.route('search_book_by_name', methods=['GET'])
+@app.route('/search_book_by_name', methods=['GET'])
 def search_book_by_name():
     name = request.form['name']
     books = Book.query.filter_by(Book.name.like(f"%{name}%")).all()
     return render_template('index.html', books=books)
         
 ## Search book by author
-@app.route('search_book_by_author', methods=['GET'])
+@app.route('/search_book_by_author', methods=['GET'])
 def search_book_by_author():
     author = request.form['author']
     books = Book.query.filter_by(Book.authors.like(f"%{author}%")).all()
@@ -349,7 +350,7 @@ def search_book_by_author():
         
 
 ## Get book for a section
-@app.route('get_section_books/<string:section>', methods=['GET'])
+@app.route('/get_section_books/<string:section>', methods=['GET'])
 def get_section_books(section):
     section = Section.query.filter_by(name=section).first()
     books = section.books
