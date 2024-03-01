@@ -1,11 +1,24 @@
 ## core functions for the app , like routes we want to use, and logic of the app
 from flask import render_template, url_for, request, redirect, Flask
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from functools import wraps
 import bcrypt
 from app import app
 from .database import db
 from .models import User, Librarian, Book, Review, BookIssue, Section 
 from datetime import datetime, timedelta
+
 ## MAIN PAGE ROUTES
+login_manager = LoginManager()
+
+def librarian_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        # Check if the current user is a librarian
+        if not current_user.role == 'librarian':
+            return redirect(url_for('unauthorized'))
+        return func(*args, **kwargs)
+    return decorated_function
 
 ## Home page
 @app.route('/')
@@ -26,6 +39,7 @@ def librarian_register():
         try:
             db.session.add(librarian)
             db.session.commit()
+            login_user(librarian)
             return redirect(url_for('/librarian/dashboard'))
         except:
             return 'There was an issue adding the librarian'
@@ -43,6 +57,7 @@ def librarian_login():
             # if librarian.password == password:
             #     return redirect(url_for('librarian_dashboard'))
             if bcrypt.checkpw(password, librarian.password):
+                login_user(librarian)
                 return redirect(url_for('/librarian/dashboard'))
             else:
                 return 'Invalid Password'
@@ -53,6 +68,8 @@ def librarian_login():
     
 ## Librarian add book
 @app.route('/librarian/add_book', methods=['POST', 'GET'])
+@login_required
+@librarian_required
 def librarian_add_book():
     if request.method == 'POST':
         name = request.form['name']
@@ -75,6 +92,8 @@ def librarian_add_book():
 
 ## Librarian edit book
 @app.route('/librarian/edit_book/<int:id>', methods=['POST', 'GET'])
+@login_required
+@librarian_required
 def librarian_edit_book():
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
@@ -95,6 +114,8 @@ def librarian_edit_book():
 
 ## Librarian add section
 @app.route('/librarian/add_section', methods=['POST', 'GET'])
+@login_required
+@librarian_required
 def librarian_add_section():
     if request.method == 'POST':
         name = request.form['name']
@@ -112,6 +133,8 @@ def librarian_add_section():
 
 ## Librarian dashboard
 @app.route('/librarian/dashboard')
+@login_required
+@librarian_required
 def librarian_dashboard():
     return render_template('librarian/dashboard.html')
 
@@ -155,6 +178,7 @@ def user_login():
 
 ## User dashboard
 @app.route('/user/dashboard')
+@login_required
 def user_dashboard():
     return render_template('user/dashboard.html')
 
@@ -162,6 +186,7 @@ def user_dashboard():
 
 ## Get book , also them to request books
 @app.route('/book/<int:id>', methods=['POST', 'GET'])
+@login_required
 def book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
@@ -189,6 +214,8 @@ def book(id):
 
 ## View Book
 @app.route('/user/view_book/<int:id>', methods=['POST', 'GET'])
+@login_required
+# Check if user does own this book
 def view_book(id):
     book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
@@ -198,6 +225,8 @@ def view_book(id):
 
 ## Read book
 @app.route('/user/read_book/<int:id>', methods=['POST', 'GET'])
+@login_required
+# Check if user does own this book
 def read_book(id):
     book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
@@ -227,6 +256,8 @@ def review_book(id):
 
 ## Issue book
 @app.route('/librarian/issue_book/<int:id>', methods=['POST'])
+@login_required
+@librarian_required
 def issue_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -253,7 +284,10 @@ def issue_book(id):
             return 'There was an issue issuing the book'
 
 ## Reject book
+        
 @app.route('/librarian/reject_book/<int:id>', methods=['POST'])
+@login_required
+@librarian_required
 def reject_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -269,6 +303,8 @@ def reject_book(id):
           
 ## Return book
 @app.route('/librarian/return_book/<int:id>', methods=['POST'])
+@login_required
+@librarian_required
 def return_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -291,6 +327,8 @@ def return_book(id):
        
 ## Revoke book
 @app.route('/librarian/revoke_book/<int:id>', methods=['POST'])
+@login_required
+@librarian_required
 def revoke_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -312,6 +350,8 @@ def revoke_book(id):
 
 ## Remove Book 
 @app.route('/librarian/remove_book/<int:id>', methods=['POST']) 
+@login_required
+@librarian_required
 def remove_book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
@@ -323,6 +363,9 @@ def remove_book(id):
 
 ## Remove Section
 @app.route('/librarian/remove_section/<int:id>', methods=['POST'])
+@login_required
+@librarian_required
+# Check if these section is valid
 def remove_section(id):
     section = Section.query.get_or_404(id)
     if request.method == 'POST':

@@ -1,5 +1,7 @@
 from .database import db
 from datetime import datetime
+from flask_security import UserMixin
+
 ## All the models for the app
 # like User , Books , etc
 
@@ -11,12 +13,13 @@ from datetime import datetime
 # * Sections RELATIONSHIP to SECTION
 # * Books RELATIONSHIP to BOOK
 # * Books Issues RELATIONSHIP to BOOK_ISSUE
-class Librarian(db.Model):
+class Librarian(db.Model, UserMixin):
     __tablename__ = 'librarian'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False)
+    role = 'librarian'
     
     ## relationship - one to many
     sections = db.relationship('Section', backref='librarian', lazy=True)
@@ -30,13 +33,14 @@ class Librarian(db.Model):
 # PASSWORD VARCHAR(100) NOT NULL ## Hashed
 # * BooksBorrowed RELATIONSHIP to BOOK_ISSUE
 # TotalBooksBorrowed INT NOT NULL
-class User(db.Model):
+class User(db.Model , UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False)
     total_books_borrowed = db.Column(db.Integer, nullable=False, default=0)
+    role = 'user'
     
     ## relationship - one to many
     books_borrowed = db.relationship('BookIssue', backref='user', lazy=True)
