@@ -1,6 +1,6 @@
 from .database import db
 from datetime import datetime
-from flask_security import UserMixin
+from flask_login import UserMixin
 
 ## All the models for the app
 # like User , Books , etc
@@ -19,6 +19,7 @@ class Librarian(db.Model, UserMixin):
     name = db.Column(db.String(100), nullable=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False)
+    active = db.Column(db.Boolean)
     role = 'librarian'
     
     ## relationship - one to many
@@ -40,6 +41,7 @@ class User(db.Model , UserMixin):
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False)
     total_books_borrowed = db.Column(db.Integer, nullable=False, default=0)
+    active = db.Column(db.Boolean)
     role = 'user'
     
     ## relationship - one to many

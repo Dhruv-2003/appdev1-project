@@ -9,7 +9,6 @@ from .models import User, Librarian, Book, Review, BookIssue, Section
 from datetime import datetime, timedelta
 
 ## MAIN PAGE ROUTES
-login_manager = LoginManager()
 
 def librarian_required(func):
     @wraps(func)
