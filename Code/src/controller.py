@@ -8,8 +8,20 @@ from .database import db
 from .models import User, Librarian, Book, Review, BookIssue, Section 
 from datetime import datetime, timedelta
 
-## MAIN PAGE ROUTES
+login_manager = LoginManager()
 
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        return user
+    else:
+        librarian = Librarian.query.get(user_id)
+        if librarian:
+            return librarian
+        else:
+            return None
+        
 def librarian_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -18,6 +30,8 @@ def librarian_required(func):
             return redirect(url_for('unauthorized'))
         return func(*args, **kwargs)
     return decorated_function
+
+## MAIN PAGE ROUTES
 
 ## Home page
 @app.route('/')
@@ -132,8 +146,8 @@ def librarian_add_section():
 
 ## Librarian dashboard
 @app.route('/librarian/dashboard')
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def librarian_dashboard():
     return render_template('librarian/dashboard.html')
 
@@ -177,7 +191,7 @@ def user_login():
 
 ## User dashboard
 @app.route('/user/dashboard')
-@login_required
+# @login_required
 def user_dashboard():
     return render_template('user/dashboard.html')
 

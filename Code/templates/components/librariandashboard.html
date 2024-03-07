@@ -1,0 +1,90 @@
+<!-- <ul class="nav nav-pills nav-fill justify-content-center">
+  <li class="nav-item">
+    <a class="nav-link" aria-current="page" href="#bookRequests"
+      >Book Requests</a
+    >
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#currentIssuedBooks">Current Issued Books</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#availableBooks">Available E Books</a>
+  </li>
+</ul> -->
+<ul
+  class="nav nav-pills nav-fill justify-content-center"
+  id="myTab"
+  role="tablist"
+>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link active"
+      id="bookRequests-tab"
+      data-bs-toggle="tab"
+      data-bs-target="#bookRequests-tab-pane"
+      type="button"
+      role="tab"
+      aria-controls="bookRequests-tab-pane"
+      aria-selected="true"
+    >
+      Book Requests
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link"
+      id="currentIssuedBooks-tab"
+      data-bs-toggle="tab"
+      data-bs-target="#currentIssuedBooks-tab-pane"
+      type="button"
+      role="tab"
+      aria-controls="currentIssuedBooks-tab-pane"
+      aria-selected="false"
+    >
+      Current Issued Books
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link"
+      id="availableBooks-tab"
+      data-bs-toggle="tab"
+      data-bs-target="#availableBooks-tab-pane"
+      type="button"
+      role="tab"
+      aria-controls="availableBooks-tab-pane"
+      aria-selected="false"
+    >
+      Available E Books
+    </button>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div
+    class="tab-pane fade show active"
+    id="bookRequests-tab-pane"
+    role="tabpanel"
+    aria-labelledby="bookRequests-tab"
+    tabindex="0"
+  >
+    {% include "components/bookRequests.html" %}
+  </div>
+  <div
+    class="tab-pane fade"
+    id="currentIssuedBooks-tab-pane"
+    role="tabpanel"
+    aria-labelledby="currentIssuedBooks-tab"
+    tabindex="0"
+  >
+    {% include "components/currentIssuedBooks.html" %}
+  </div>
+  <div
+    class="tab-pane fade"
+    id="availableBooks-tab-pane"
+    role="tabpanel"
+    aria-labelledby="availableBooks-tab"
+    tabindex="0"
+  >
+    {% include "components/availableBooks.html" %}
+  </div>
+</div>
