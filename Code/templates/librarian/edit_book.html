@@ -8,7 +8,51 @@
 
 <!-- prettier-ignore -->
 {% block body %}
-<div class="content">
-  <h1>Edit book</h1>
+<div class="content container">
+  <form method="post">
+    <div class="d-flex flex-row mx-5 justify-content-evenly">
+      <h1 class="p-2">Edit Book</h1>
+      <button class="p-2">Save / Add</button>
+    </div>
+    <div class="d-flex flex justify-content-evenly py-5">
+      <div class="d-flex flex-column">
+        <label for="password">Book Name: </label>
+        <input type="text" name="bookName" id="bookName" value="Ikigai" />
+
+        <label for="password">Author Name: </label>
+        <input
+          type="text"
+          name="authorName"
+          id="authorName"
+          value="Francesc Miralles"
+        />
+      </div>
+
+      <div class="dropdown">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Select Section
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">Section 1</a></li>
+          <li>
+            <a class="dropdown-item" href="#">Section 2</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Section 3</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="input-group">
+      <span class="input-group-text">Book content</span>
+      <textarea class="form-control" aria-label="Book content" value=".....">
+      </textarea>
+    </div>
+  </form>
 </div>
 {% endblock %}

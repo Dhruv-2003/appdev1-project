@@ -81,8 +81,8 @@ def librarian_login():
     
 ## Librarian add book
 @app.route('/librarian/add_book', methods=['POST', 'GET'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def librarian_add_book():
     if request.method == 'POST':
         name = request.form['name']
@@ -105,9 +105,9 @@ def librarian_add_book():
 
 ## Librarian edit book
 @app.route('/librarian/edit_book/<int:id>', methods=['POST', 'GET'])
-@login_required
-@librarian_required
-def librarian_edit_book():
+# @login_required
+# @librarian_required
+def librarian_edit_book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
         book.name = request.form['name']
@@ -127,8 +127,8 @@ def librarian_edit_book():
 
 ## Librarian add section
 @app.route('/librarian/add_section', methods=['POST', 'GET'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def librarian_add_section():
     if request.method == 'POST':
         name = request.form['name']
@@ -199,7 +199,7 @@ def user_dashboard():
 
 ## Get book , also them to request books
 @app.route('/book/<int:id>', methods=['POST', 'GET'])
-@login_required
+# @login_required
 def book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
@@ -227,7 +227,7 @@ def book(id):
 
 ## View Book
 @app.route('/user/view_book/<int:id>', methods=['POST', 'GET'])
-@login_required
+# @login_required
 # Check if user does own this book
 def view_book(id):
     book = Book.query.get_or_404(id)
@@ -238,10 +238,10 @@ def view_book(id):
 
 ## Read book
 @app.route('/user/read_book/<int:id>', methods=['POST', 'GET'])
-@login_required
+# @login_required
 # Check if user does own this book
 def read_book(id):
-    book = Book.query.get_or_404(id)
+    # book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
     ## If yes, then render the view_book.html
     ## Else, redirect to the book page
