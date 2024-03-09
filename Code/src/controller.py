@@ -108,7 +108,7 @@ def librarian_add_book():
 # @login_required
 # @librarian_required
 def librarian_edit_book(id):
-    book = Book.query.get_or_404(id)
+    # book = Book.query.get_or_404(id)
     if request.method == 'POST':
         book.name = request.form['name']
         book.author = request.form['author']
@@ -201,7 +201,7 @@ def user_dashboard():
 @app.route('/book/<int:id>', methods=['POST', 'GET'])
 # @login_required
 def book(id):
-    book = Book.query.get_or_404(id)
+    # book = Book.query.get_or_404(id)
     if request.method == 'POST':
         user_id = request.form['user_id']
         book_id = request.form['book_id']
@@ -230,7 +230,7 @@ def book(id):
 # @login_required
 # Check if user does own this book
 def view_book(id):
-    book = Book.query.get_or_404(id)
+    # book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
     ## If yes, then render the view_book.html
     ## Else, redirect to the book page
