@@ -91,7 +91,7 @@ class Book(db.Model):
     authors = db.Column(db.String(32), nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
     librarian_id = db.Column(db.Integer, db.ForeignKey('librarian.id'), nullable=False)
-    no_of_pages = db.Column(db.Integer, nullable=False)
+    no_of_pages = db.Column(db.Integer)
     date_created = db.Column(db.DateTime, nullable=False, default= datetime.now())
     description = db.Column(db.String(100), nullable=False)
     rating = db.Column(db.Integer, nullable=False)

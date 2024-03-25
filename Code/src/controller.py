@@ -100,12 +100,18 @@ def librarian_add_book():
         name = request.form['name']
         author = request.form['author']
         content = request.form['content']
-        section_id = request.form['section_id']
-        librarian_id = request.form['librarian_id']
-        no_of_pages = request.form['no_of_pages']
+        section_id = request.form['selected_section']
+        cover_image = request.files['bookpdf']
+
+        ## TODO: get librarian from record
+        # librarian_id = request.form['librarian_id']
+        librarian_id = 1;
+        # no_of_pages = request.form['no_of_pages']
+        ## TODO :  no of pages has to be removed
+        no_of_pages=100;
         description = request.form['description']
         rating = 0
-        book = Book(name=name, author=author,content=content, section_id=section_id, librarian_id=librarian_id, no_of_pages=no_of_pages, description=description, rating=rating)
+        book = Book(name=name, authors=author,content=content, section_id=section_id, librarian_id=librarian_id, no_of_pages=no_of_pages, description=description, rating=rating)
         try:
             db.session.add(book)
             db.session.commit()
@@ -115,7 +121,8 @@ def librarian_add_book():
             return str(error)
             return 'There was an issue adding the book'
     else:
-        return render_template('librarian/add_book.html')
+        sections = Section.query.all()
+        return render_template('librarian/add_book.html', sections=sections)
 
 ## Librarian edit book
 @app.route('/librarian/edit_book/<int:id>', methods=['POST', 'GET'])
@@ -232,7 +239,7 @@ def user_dashboard():
 @app.route('/book/<int:id>', methods=['POST', 'GET'])
 # @login_required
 def book(id):
-    # book = Book.query.get_or_404(id)
+    book = Book.query.get_or_404(id)
     if request.method == 'POST':
         user_id = request.form['user_id']
         book_id = request.form['book_id']

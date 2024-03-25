@@ -9,22 +9,35 @@
 <!-- prettier-ignore -->
 {% block body %}
 <div class="content container">
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     <div class="d-flex flex-row mx-5 justify-content-evenly">
       <h1 class="p-2">Add Book</h1>
-      <button class="p-2">Save / Add</button>
+      <button type="submit" class="btn btn-primary">Save / Add</button>
     </div>
     <div class="d-flex flex justify-content-evenly py-5">
       <div class="d-flex flex-column">
-        <label for="password">Book Name: </label>
-        <input type="text" name="bookName" id="bookName" />
+        <label for="name" class="form-label">Book Name: </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          class="form-control"
+          placeholder="Deep work .."
+        />
 
-        <label for="password">Author Name: </label>
-        <input type="text" name="authorName" id="authorName" />
+        <label for="author" class="form-label">Author Name: </label>
+        <input
+          type="text"
+          name="author"
+          id="author"
+          class="form-control"
+          placeholder="Cal Newport..."
+        />
       </div>
 
       <div class="dropdown">
         <button
+          id="select_section_btn"
           class="btn btn-secondary dropdown-toggle"
           type="button"
           data-bs-toggle="dropdown"
@@ -32,29 +45,81 @@
         >
           Select Section
         </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">Section 1</a></li>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {% for section in sections %}
           <li>
-            <a class="dropdown-item" href="#">Section 2</a>
+            <a
+              class="dropdown-item"
+              href="#"
+              data-id="{{ section.id }}"
+              data-name="{{ section.name}}"
+              >{{ section.name }}</a
+            >
           </li>
-          <li>
-            <a class="dropdown-item" href="#">Section 3</a>
-          </li>
+          {% endfor %}
         </ul>
+        <input
+          type="hidden"
+          id="selected_section"
+          name="selected_section"
+          value=""
+        />
       </div>
       <div class="d-flex flex-column justify-content-evenly">
-        <label for="pdf">Upload PDF</label>
-        <input type="file" name="bookpdf" id="bookpdf" />
+        <label for="bookpdf" class="form-label">Upload PDF</label>
+        <input
+          type="file"
+          name="bookpdf"
+          id="bookpdf"
+          class="form-control"
+          accept=""
+        />
       </div>
     </div>
     <div class="input-group">
-      <span class="input-group-text">Book content</span>
+      <span class="input-group-text" class="form-label">Book Description</span>
+      <textarea
+        class="form-control"
+        rows="12"
+        aria-label="Book Description"
+        name="description"
+        id="description"
+        class="form-control"
+        placeholder="Cal Newport..."
+      ></textarea>
+    </div>
+    <div class="input-group">
+      <span class="input-group-text" class="form-label">Book content</span>
       <textarea
         class="form-control"
         rows="12"
         aria-label="Book content"
+        name="content"
+        id="content"
+        class="form-control"
+        placeholder="Cal Newport..."
       ></textarea>
     </div>
   </form>
 </div>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block script %}
+<script>
+  function handleDropdownItemClick(event) {
+    var selectedSectionId = event.target.getAttribute("data-id");
+    var selectedSectionName = event.target.getAttribute("data-name");
+    console.log(selectedSectionId, selectedSectionName);
+    document.getElementById("selected_section").value = selectedSectionId;
+    document.getElementById("select_section_btn").innerText =
+      selectedSectionName;
+  }
+
+  // Add click event listeners to dropdown items
+  var dropdownItems = document.querySelectorAll(".dropdown-item");
+  dropdownItems.forEach(function (item) {
+    item.addEventListener("click", handleDropdownItemClick);
+  });
+</script>
 {% endblock %}
