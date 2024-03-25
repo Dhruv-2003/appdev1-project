@@ -11,30 +11,18 @@
       </tr>
     </thead>
     <tbody>
+      {% for book_issue in currently_issued %}
       <tr>
-        <th scope="row">1</th>
+        <th scope="row">{{ book_issue.id }}</th>
         <td><input type="checkbox" /></td>
-        <td>Otto</td>
-        <td>@mdo</td>
-        <td>24 feb 24</td>
-        <td><button>❌ Reject</button></td>
+        <td>{{ book_issue.book.name }}</td>
+        <td>{{ book_issue.user.name }}</td>
+        <!--TODO: Convert the date  -->
+        <td>{{ book_issue.date_issued }}</td>
+        <!--TODO: Revoke the access -->
+        <td><button>❌ Revoke</button></td>
       </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td><input type="checkbox" /></td>
-        <td>Jacob</td>
-        <td>@fat</td>
-        <td>24 feb 24</td>
-        <td><button>❌ Reject</button></td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td><input type="checkbox" /></td>
-        <td>Larry</td>
-        <td>@twitter</td>
-        <td>24 feb 24</td>
-        <td><button>❌ Reject</button></td>
-      </tr>
+      <!-- {% endfor %} -->
     </tbody>
   </table>
 </div>

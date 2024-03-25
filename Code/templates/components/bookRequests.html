@@ -10,27 +10,15 @@
       </tr>
     </thead>
     <tbody>
+      {% for book_issue in book_requests %}
       <tr>
-        <th scope="row">1</th>
+        <th scope="row">{{ book_issue.id }}</th>
         <td><input type="checkbox" /></td>
-        <td>Otto</td>
-        <td>@mdo</td>
+        <td>{{ book_issue }}</td>
+        <td>{{ book_issue.user.name }}</td>
         <td><button>Approve</button> <button>❌</button></td>
       </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td><input type="checkbox" /></td>
-        <td>Jacob</td>
-        <td>@fat</td>
-        <td><button>Approve</button> <button>❌</button></td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td><input type="checkbox" /></td>
-        <td>Larry</td>
-        <td>@twitter</td>
-        <td><button>Approve</button> <button>❌</button></td>
-      </tr>
+      <!-- {% endfor %} -->
     </tbody>
   </table>
 </div>

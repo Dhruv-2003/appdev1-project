@@ -10,12 +10,14 @@
       </tr>
     </thead>
     <tbody>
+      {% for book in available_books %}
       <tr>
         <th scope="row">1</th>
         <td><input type="checkbox" /></td>
-        <td>Otto</td>
+        <td>{{ book.name }}</td>
         <td>
           <button type="button">Edit</button>
+          <!-- TODO: assign to open the modal to change the section -->
           <!-- Button trigger modal -->
           <button
             type="button"
@@ -24,43 +26,11 @@
           >
             Assign
           </button>
-
+          <!-- TODO: Remove the book from the db -->
           <button>❌ Remove</button>
         </td>
       </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td><input type="checkbox" /></td>
-        <td>Jacob</td>
-
-        <td>
-          <button>Edit</button>
-          <button
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
-            Assign
-          </button>
-          <button>❌ Remove</button>
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td><input type="checkbox" /></td>
-        <td>Larry</td>
-        <td>
-          <button>Edit</button>
-          <button
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
-            Assign
-          </button>
-          <button>❌ Remove</button>
-        </td>
-      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>

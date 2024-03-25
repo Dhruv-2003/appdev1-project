@@ -183,7 +183,25 @@ def librarian_add_section():
 # @login_required
 # @librarian_required
 def librarian_dashboard():
-    return render_template('librarian/dashboard.html')
+    ## TODO : get the librarian Id from current user
+    librarian_id = 1;
+    librarian  = Librarian.query.get_or_404(librarian_id)
+
+    books_issued = librarian.books_issues;
+    book_requests = []
+    currently_issued = []    
+    ## TODO : Get all the requests
+    ## Filter ones which have a status requested and pass them as book requests    
+    ## Filter ones which are currently issued
+    for book_issue in books_issued:
+        if(book_issue.status == "REQUESTED"):
+            book_requests.append(book_issue)
+        elif(book_issue.staus == "ISSUED"):
+            currently_issued.append(book_issue)
+    
+    ## Filter ones which librarians has added
+    available_books = librarian.books
+    return render_template('librarian/dashboard.html',book_requests = book_requests, currently_issued = currently_issued , available_books = available_books)
 
 ### USER ROUTES
 
