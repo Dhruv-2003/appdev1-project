@@ -7,12 +7,16 @@ from app import app
 from .database import db
 from .models import User, Librarian, Book, Review, BookIssue, Section 
 from datetime import datetime, timedelta
+import os
+from werkzeug.utils import secure_filename
 
-login_manager = LoginManager()
+# login_manager = LoginManager()
 
-@login_manager.user_loader
+
+# @login_manager.user_loader
 def load_user(user_id):
-    user = User.query.get(user_id)
+    print("User ID",user_id)
+    user = User.query.get(int(user_id))
     if user:
         return user
     else:
@@ -21,7 +25,12 @@ def load_user(user_id):
             return librarian
         else:
             return None
-        
+
+# Function to check if file extension is allowed
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
 def librarian_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -47,14 +56,17 @@ def librarian_register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-        librarian = Librarian(username=username, password=hashed_password)
+        name = request.form['name']
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        librarian = Librarian(username=username, password=hashed_password, name = name)
         try:
             db.session.add(librarian)
             db.session.commit()
-            login_user(librarian)
-            return redirect(url_for('/librarian/dashboard'))
-        except:
+            # login_user(librarian)
+            return redirect(url_for('librarian_dashboard'))
+        except Exception as error:
+            print("An exception occurred:", error) # An exception occurred: 
+            return str(error)
             return 'There was an issue adding the librarian'
     else:
         return render_template('librarian/register.html')
@@ -69,15 +81,15 @@ def librarian_login():
         if librarian:
             # if librarian.password == password:
             #     return redirect(url_for('librarian_dashboard'))
-            if bcrypt.checkpw(password, librarian.password):
-                login_user(librarian)
-                return redirect(url_for('/librarian/dashboard'))
+            if bcrypt.checkpw(password.encode('utf-8'), librarian.password):
+                # login_user(librarian)
+                return redirect(url_for('librarian_dashboard'))
             else:
                 return 'Invalid Password'
         else:
             return 'Invalid Username'
     else:
-        return render_template('librarian/login.html')
+        return render_template('librarian_dashboard')
     
 ## Librarian add book
 @app.route('/librarian/add_book', methods=['POST', 'GET'])
@@ -97,8 +109,10 @@ def librarian_add_book():
         try:
             db.session.add(book)
             db.session.commit()
-            return redirect(url_for('/librarian/dashboard'))
-        except:
+            return redirect(url_for('librarian_dashboard'))
+        except Exception as error:
+            print("An exception occurred:", error) # An exception occurred: 
+            return str(error)
             return 'There was an issue adding the book'
     else:
         return render_template('librarian/add_book.html')
@@ -133,13 +147,24 @@ def librarian_add_section():
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
-        librarian_id = request.form['librarian_id']
+        cover_image = request.files['image']
+
+        ## TODO : get the librarian ID from the serverSide with current_user
+        # librarian_id = request.form['librarian_id']
+        librarian_id = 1;
         section = Section(name=name, description=description, librarian_id=librarian_id)
         try:
             db.session.add(section)
             db.session.commit()
-            return redirect(url_for('/librarian/dashboard'))
-        except:
+            if cover_image and allowed_file(cover_image.filename):
+                filename = secure_filename(cover_image.filename)
+                ## TODO:  Store the filename for section
+                cover_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            return redirect(url_for('librarian_dashboard'))
+        except Exception as error:
+            print("An exception occurred:", error) # An exception occurred: 
+            return str(error)
             return 'There was an issue adding the section'
     else:
         return render_template('librarian/add_section.html')
@@ -159,14 +184,18 @@ def user_register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-        user = User(username=username, password=hashed_password)
+        name = request.form['name']
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        user = User(username=username, password=hashed_password, name=name)
         try:
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for('/user/dashboard'))
-        except:
-            return 'There was an issue adding the user'
+            # login_user(user)
+            return redirect(url_for('user_dashboard'))
+        except Exception as error:
+            # print("An exception occurred:", error) # An exception occurred: 
+            # return str(error)
+            return "There was a problem adding the user"
     else:
         return render_template('user/register.html')
 
@@ -179,8 +208,9 @@ def user_login():
     
         user = User.query.filter_by(username=username).first()
         if user:
-            if bcrypt.checkpw(password, user.password):
-                return redirect(url_for('/user/dashboard'))
+            if bcrypt.checkpw(password.encode('utf-8'), user.password):
+                # login_user(user)
+                return redirect(url_for('user_dashboard'))
             else:
                 return 'Invalid Password'
         else:
@@ -193,6 +223,7 @@ def user_login():
 @app.route('/user/dashboard')
 # @login_required
 def user_dashboard():
+    ## get the data for the user which is connected
     return render_template('user/dashboard.html')
 
 ### BOOK ROUTES
@@ -216,7 +247,7 @@ def book(id):
             try:
                 db.session.add(book_issue)
                 db.session.commit()
-                return redirect(url_for('/book/<id>'))
+                return redirect(url_for('book', id=id))
             except:
                 return 'There was an issue adding the book'
         else:        
@@ -269,8 +300,8 @@ def review_book(id):
 
 ## Issue book
 @app.route('/librarian/issue_book/<int:id>', methods=['POST'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def issue_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -299,8 +330,8 @@ def issue_book(id):
 ## Reject book
         
 @app.route('/librarian/reject_book/<int:id>', methods=['POST'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def reject_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -316,8 +347,8 @@ def reject_book(id):
           
 ## Return book
 @app.route('/librarian/return_book/<int:id>', methods=['POST'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def return_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -340,8 +371,8 @@ def return_book(id):
        
 ## Revoke book
 @app.route('/librarian/revoke_book/<int:id>', methods=['POST'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def revoke_book(id):
     book_issue = BookIssue.query.get_or_404(id)
     if request.method == 'POST':
@@ -363,8 +394,8 @@ def revoke_book(id):
 
 ## Remove Book 
 @app.route('/librarian/remove_book/<int:id>', methods=['POST']) 
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 def remove_book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
@@ -376,8 +407,8 @@ def remove_book(id):
 
 ## Remove Section
 @app.route('/librarian/remove_section/<int:id>', methods=['POST'])
-@login_required
-@librarian_required
+# @login_required
+# @librarian_required
 # Check if these section is valid
 def remove_section(id):
     section = Section.query.get_or_404(id)

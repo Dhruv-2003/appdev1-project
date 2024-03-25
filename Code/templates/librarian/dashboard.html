@@ -10,11 +10,17 @@
 {% block body %}
 <div class="content">
   <h1>Librarian dashboard</h1>
-  <button>Statistics</button>
+  <a href="{{ url_for('librarian_add_section')}}">
+    <button>Statistics</button>
+  </a>
   <br />
-  <button>➕ Section</button>
+  <a href="{{ url_for('librarian_add_section')}}">
+    <button type="button">➕ Section</button>
+  </a>
   <a>Or</a>
-  <button>➕ Book</button>
+  <a href="{{ url_for('librarian_add_book')}}">
+    <button>➕ Book</button>
+  </a>
   <br />
 
   {% include "components/librariandashboard.html" %}

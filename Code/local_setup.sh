@@ -1,5 +1,6 @@
 ## Code for Local setup of the project , like installing dependencies etc , or setting the env 
 
+python3 -m venv venv
 
 . env/bin/activate
 

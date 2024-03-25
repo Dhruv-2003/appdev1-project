@@ -2,6 +2,10 @@ from .database import db
 from datetime import datetime
 from flask_login import UserMixin
 
+from app import app
+
+# from app import app
+
 ## All the models for the app
 # like User , Books , etc
 
@@ -59,7 +63,7 @@ class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     librarian_id = db.Column(db.Integer, db.ForeignKey('librarian.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
-    date_created = db.Column(db.DateTime, default= datetime.utcnow())
+    date_created = db.Column(db.DateTime, default= datetime.now())
     description = db.Column(db.String(100), nullable=False)
     
     ## relationship - one to many
@@ -88,7 +92,7 @@ class Book(db.Model):
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
     librarian_id = db.Column(db.Integer, db.ForeignKey('librarian.id'), nullable=False)
     no_of_pages = db.Column(db.Integer, nullable=False)
-    date_created = db.Column(db.DateTime, nullable=False, default= datetime.utcnow())
+    date_created = db.Column(db.DateTime, nullable=False, default= datetime.now())
     description = db.Column(db.String(100), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     
@@ -122,7 +126,10 @@ class BookIssue(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     librarian_id = db.Column(db.Integer, db.ForeignKey('librarian.id'), nullable=False)
-    date_requested = db.Column(db.DateTime, nullable=False, default= datetime.utcnow())
+    date_requested = db.Column(db.DateTime, nullable=False, default= datetime.now())
     date_issued = db.Column(db.DateTime)
     return_date = db.Column(db.DateTime)
     status = db.Column(db.Enum('REQUESTED','REJECTED','ISSUED','RETURNED','REVOKED'), nullable=False)
+
+with app.app_context():
+    db.create_all()

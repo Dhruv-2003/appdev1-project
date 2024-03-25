@@ -12,11 +12,9 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
     app.secret_key = os.getenv('SECRET_KEY')     
     db.init_app(app)
-    app.app_context().push()
+    # app.app_context().push()
     # login_manager = LoginManager()
     # login_manager.init_app(app)
-    with app.app_context():
-        db.create_all()
     return app
 
 app = create_app()

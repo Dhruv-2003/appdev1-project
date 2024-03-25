@@ -10,20 +10,47 @@
 {% block body %}
 <div class="content container">
   <h1>Add section</h1>
-  <div class="d-flex flex-column py-5">
-    <div class="d-flex flex-row mx-5 justify-content-evenly">
-      <label for="password">Section Name: </label>
-      <input type="text" name="bookName" id="bookName" />
-      <div class="d-flex flex-column justify-content-evenly">
-        <label for="pdf">Upload Section Image</label>
-        <input type="file" name="bookpdf" id="bookpdf" />
+  <form
+    method="post"
+    enctype="multipart/form-data"
+    class="align-items-center w-50"
+  >
+    <div class="d-flex flex-column py-5">
+      <div class="d-flex flex-row mx-5 justify-content-evenly">
+        <label for="name" class="form-label">Section Name: </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          class="form-control"
+          placeholder="Literature ..."
+        />
+        <div class="d-flex flex-column justify-content-evenly">
+          <label for="image" class="form-label">Upload Section Image</label>
+          <input
+            type="file"
+            name="image"
+            id="image"
+            class="form-control"
+            accept="image/*"
+          />
+        </div>
       </div>
-    </div>
 
-    <div class="input-group py-5">
-      <span class="input-group-text">Section Description</span>
-      <textarea class="form-control" aria-label="Book content"></textarea>
+      <div class="input-group py-5">
+        <span class="input-group-text" class="form-label"
+          >Section Description</span
+        >
+        <textarea
+          class="form-control"
+          aria-label="Book content"
+          name="description"
+          id="description"
+          placeholder="Literature ..."
+        ></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </div>
-  </div>
+  </form>
 </div>
 {% endblock %}
