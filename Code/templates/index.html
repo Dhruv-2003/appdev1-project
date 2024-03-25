@@ -16,6 +16,7 @@
         <div class="input-group">
           <input
             type="text"
+            id="Search"
             class="form-control"
             placeholder="Search"
             aria-label="Search"
@@ -36,40 +37,95 @@
     <div class="row mb-3">
       <div class="col-3 d-flex flex-column px-5 border">
         <h2>Sections</h2>
-        <!-- {% for section in sections %}
-        <a> {{ section }}</a>
-        {% endfor %} -->
-        <a> Section 1</a>
-        <a> Section 2</a>
-        <a> Section 3</a>
-        <a> Section 4</a>
+        <a href="#" class="section-link" id="section-all" data-section-id="all">
+          All</a
+        >
+        {% for section in sections %}
+        <a
+          href="#"
+          class="section-link"
+          id="section-{{ section.id }}"
+          data-section-id="{{ section.id }}"
+        >
+          {{ section.name }}</a
+        >
+        {% endfor %}
       </div>
       <div class="col-9 px-5 border container-wrapper-flex-col-16">
         <h3>Books</h3>
         <div style="width: 100%" class="row">
-          <div class="col-sm-5 col-md-6">
-            <div class="card book-card">
-              <img
-                src="https://m.media-amazon.com/images/I/71onC7VRHbL._SL1500_.jpg"
-                class="book-img"
-              />
-              <h3>Book 1</h3>
-              <h4>by Author 1</h4>
+          {% for book in books %}
+          <a
+            href="/book/{{ book.id }}"
+            class="book-link"
+            data-book-id="{{ book.id }}"
+            data-section-id="{{ book.section_id }}"
+          >
+            <div class="col-sm-5 col-md-6">
+              <div class="card book-card">
+                <img
+                  src="https://m.media-amazon.com/images/I/71onC7VRHbL._SL1500_.jpg"
+                  class="book-img"
+                />
+                <h3>{{ book.name }}</h3>
+                <h4>{{ book.authors }}</h4>
+              </div>
             </div>
-          </div>
-          <div class="col-sm-5 col-md-6">
-            <div class="card book-card">
-              <img
-                src="https://m.media-amazon.com/images/I/71onC7VRHbL._SL1500_.jpg"
-                class="book-img"
-              />
-              <h3 class="">Book 1</h3>
-              <h4>by Author 1</h4>
-            </div>
-          </div>
+          </a>
+          {% endfor %}
         </div>
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block script %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var sectionLinks = document.querySelectorAll(".section-link");
+    var bookItems = document.querySelectorAll(".book-link");
+
+    // Filtering Books on the basis of Section
+    // TODO: remove this section filter if all ✅
+    sectionLinks.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        var selectedSectionId = link.getAttribute("data-section-id");
+
+        bookItems.forEach(function (item) {
+          var bookSectionId = item.getAttribute("data-section-id");
+          if (selectedSectionId === "" || selectedSectionId === bookSectionId) {
+            // Show book if section matches or all sections selected
+            item.style.display = "block";
+          } else if (selectedSectionId == "all") {
+            item.style.display = "block";
+          } else {
+            // Hide book if section doesn't match
+            item.style.display = "none";
+          }
+        });
+      });
+    });
+
+    // Filtering books on the basis of Search
+    // TODO: currently only on the basis of name , possible author search too
+    // TODO: Also happening currently on the client side , potential change to db Side possible
+    var bookSearch = document.getElementById("Search");
+    bookSearch.addEventListener("input", function () {
+      var searchValue = bookSearch.value.toLowerCase();
+
+      bookItems.forEach(function (item) {
+        var bookTitle = item.innerText.toLowerCase();
+        if (bookTitle.includes(searchValue)) {
+          item.style.display = "block"; // Show book if search value is found in title
+        } else {
+          item.style.display = "none"; // Hide book if search value is not found
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

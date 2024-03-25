@@ -45,8 +45,10 @@ def librarian_required(func):
 ## Home page
 @app.route('/')
 def index():
+    books = Book.query.all()
+    sections = Section.query.all()
     # fetch all the books directly for all the sections
-    return render_template('index.html')
+    return render_template('index.html', books= books,sections = sections)
 
 ### LIBRARIAN ROUTES
 
