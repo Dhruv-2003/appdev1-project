@@ -243,13 +243,15 @@ def user_dashboard():
 def book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
-        user_id = request.form['user_id']
-        book_id = request.form['book_id']
-        librarian_id = request.form['librarian_id']
+
+        ## TODO: get from the user ID
+        user_id = 1
+        book_id = id
+        librarian_id = book.librarian.id
         status = "REQUESTED"
         ## MIGHT NEED TO CHECK THE USER'S BOOKS BORROWED
-         ## MIGHT NEED TO ADD THE BOOKS TO THE USER'S BOOKS BORROWED
-        user = User.query.get_or_404(book_issue.user_id)
+        ## MIGHT NEED TO ADD THE BOOKS TO THE USER'S BOOKS BORROWED
+        user = User.query.get_or_404(user_id)
         total_books_borrowed = user.total_books_borrowed
         if total_books_borrowed <5:
             book_issue = BookIssue(user_id=user_id, book_id=book_id, librarian_id=librarian_id, status=status)
