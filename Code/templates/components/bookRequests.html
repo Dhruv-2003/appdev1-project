@@ -14,11 +14,31 @@
       <tr>
         <th scope="row">{{ book_issue.id }}</th>
         <td><input type="checkbox" /></td>
+        <!-- TODO: Change Book_issue to book name -->
         <td>{{ book_issue }}</td>
         <td>{{ book_issue.user.name }}</td>
-        <td><button>Approve</button> <button>❌</button></td>
+        <td>
+          <form
+            action="/librarian/issue_book/{{ book_issue.id }}"
+            method="POST"
+          >
+            <button type="submit" name="action">Approve</button>
+          </form>
+          <form
+            action="/librarian/reject_books/{{ book_issue.id }}"
+            method="POST"
+          >
+            <button type="submit" name="action">❌</button>
+          </form>
+        </td>
       </tr>
       <!-- {% endfor %} -->
     </tbody>
   </table>
 </div>
+
+{% block script %}
+<script>
+  // TODO: Add multiple select option to issue or revoke
+</script>
+{% endblock %}

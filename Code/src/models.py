@@ -98,6 +98,7 @@ class Book(db.Model):
     
     ## relationship - one to many
     reviews = db.relationship('Review', backref='book', lazy=True)
+    issues =  db.relationship('BookIssue', backref='book', lazy=True)
 
 ## REVIEW
 # ID PRIMARY KEY , UNIQUE, AUTOINCREMENT, NOT NULL

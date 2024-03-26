@@ -196,9 +196,8 @@ def librarian_dashboard():
     for book_issue in books_issued:
         if(book_issue.status == "REQUESTED"):
             book_requests.append(book_issue)
-        elif(book_issue.staus == "ISSUED"):
+        elif(book_issue.status == "ISSUED"):
             currently_issued.append(book_issue)
-    
     ## Filter ones which librarians has added
     available_books = librarian.books
     return render_template('librarian/dashboard.html',book_requests = book_requests, currently_issued = currently_issued , available_books = available_books)
@@ -345,14 +344,15 @@ def issue_book(id):
             return 'User has reached the maximum limit of books borrowed'
         
         book_issue.status = "ISSUED"
-        book_issue.date_issued = datetime.utcnow()
-        book_issue.return_date = datetime.utcnow() + timedelta(days=7)
+        book_issue.date_issued = datetime.now()
+        book_issue.return_date = datetime.now() + timedelta(days=7)
 
         ## MIGHT NEED TO ADD THE BOOKS TO THE USER'S BOOKS BORROWED
         user.total_books_borrowed += 1
 
         try:
             db.session.commit()
+            return redirect(url_for('librarian_dashboard'))
         except:
             return 'There was an issue issuing the book'
 
@@ -370,6 +370,7 @@ def reject_book(id):
         book_issue.status = "REJECTED"
         try:
             db.session.commit()
+            return redirect(url_for('librarian_dashboard'))
         except:
             return 'There was an issue rejecting the book request'
         
@@ -409,7 +410,7 @@ def revoke_book(id):
         ## If yes, then render the view_book.html
         ## Else, redirect to the book page
 
-        current_date = datetime.utcnow()
+        current_date = datetime.now()
 
         if current_date < book_issue.return_date:
             return 'Return date not yet passed , cannot revoke the book'
