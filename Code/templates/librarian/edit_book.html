@@ -12,40 +12,51 @@
   <form method="post">
     <div class="d-flex flex-row mx-5 justify-content-evenly">
       <h1 class="p-2">Edit Book</h1>
-      <button class="p-2">Save / Add</button>
+      <button type="submit" class="p-2 btn btn-primary">Save / Add</button>
     </div>
     <div class="d-flex flex justify-content-evenly py-5">
       <div class="d-flex flex-column">
         <label for="password">Book Name: </label>
-        <input type="text" name="bookName" id="bookName" value="Ikigai" />
+        <input type="text" name="name" id="name" value="{{ book.name }}" />
 
         <label for="password">Author Name: </label>
         <input
           type="text"
-          name="authorName"
-          id="authorName"
-          value="Francesc Miralles"
+          name="author"
+          id="author"
+          value="{{ book.authors }}"
         />
       </div>
 
       <div class="dropdown">
         <button
           class="btn btn-secondary dropdown-toggle"
+          id="select_section_btn"
           type="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
           Select Section
         </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">Section 1</a></li>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {% for section in sections %}
           <li>
-            <a class="dropdown-item" href="#">Section 2</a>
+            <a
+              class="dropdown-item"
+              href="#"
+              data-id="{{ section.id }}"
+              data-name="{{ section.name}}"
+              >{{ section.name }}</a
+            >
           </li>
-          <li>
-            <a class="dropdown-item" href="#">Section 3</a>
-          </li>
+          {% endfor %}
         </ul>
+        <input
+          type="hidden"
+          id="selected_section"
+          name="selected_section"
+          value=""
+        />
       </div>
     </div>
     <div class="input-group">
@@ -54,10 +65,32 @@
         class="form-control"
         rows="8"
         aria-label="Book content"
-        value="....."
+        aria-valuetext="{{ book.content }}"
+        value="{{ book.content }}"
       >
+      {{ book.content }}
       </textarea>
     </div>
   </form>
 </div>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block script %}
+<script>
+  function handleDropdownItemClick(event) {
+    var selectedSectionId = event.target.getAttribute("data-id");
+    var selectedSectionName = event.target.getAttribute("data-name");
+    // console.log(selectedSectionId, selectedSectionName);
+    document.getElementById("selected_section").value = selectedSectionId;
+    document.getElementById("select_section_btn").innerText =
+      selectedSectionName;
+  }
+
+  // Add click event listeners to dropdown items
+  var dropdownItems = document.querySelectorAll(".dropdown-item");
+  dropdownItems.forEach(function (item) {
+    item.addEventListener("click", handleDropdownItemClick);
+  });
+</script>
 {% endblock %}

@@ -131,7 +131,8 @@ def librarian_add_book():
 # @login_required
 # @librarian_required
 def librarian_edit_book(id):
-    # book = Book.query.get_or_404(id)
+    book = Book.query.get_or_404(id)
+    sections = Section.query.all()
     if request.method == 'POST':
         book.name = request.form['name']
         book.author = request.form['author']
@@ -146,7 +147,7 @@ def librarian_edit_book(id):
         except:
             return 'There was an issue editing the book'
     else:
-        return render_template('librarian/edit_book.html', book=book)
+        return render_template('librarian/edit_book.html', book=book, sections = sections)
 
 ## Librarian add section
 @app.route('/librarian/add_section', methods=['POST', 'GET'])
@@ -186,7 +187,7 @@ def librarian_dashboard():
     ## TODO : get the librarian Id from current user
     librarian_id = 1;
     librarian  = Librarian.query.get_or_404(librarian_id)
-
+    sections = Section.query.all()
     books_issued = librarian.books_issues;
     book_requests = []
     currently_issued = []    
@@ -200,7 +201,7 @@ def librarian_dashboard():
             currently_issued.append(book_issue)
     ## Filter ones which librarians has added
     available_books = librarian.books
-    return render_template('librarian/dashboard.html',book_requests = book_requests, currently_issued = currently_issued , available_books = available_books)
+    return render_template('librarian/dashboard.html',sections = sections, book_requests = book_requests, currently_issued = currently_issued , available_books = available_books)
 
 ### USER ROUTES
 
@@ -252,8 +253,12 @@ def user_dashboard():
     user_id = 1;
     user = User.query.get_or_404(user_id)
     books_borrowed = user.books_borrowed
+    currently_borrowed = []
+    for book_borrow in books_borrowed:
+        if(book_borrow.status == "ISSUED"):
+            currently_borrowed.append(book_borrow)
     ## get the data for the user which is connected
-    return render_template('user/dashboard.html' , books_borrowed = books_borrowed)
+    return render_template('user/dashboard.html' , books_borrowed = currently_borrowed)
 
 ### BOOK ROUTES
 
@@ -391,7 +396,7 @@ def return_book(id):
         ## If yes, then render the view_book.html
         ## Else, redirect to the book page
 
-        current_date = datetime.utcnow()
+        current_date = datetime.now()
 
         if current_date > book_issue.return_date:
             book_issue.status = "REVOKED"
@@ -438,7 +443,8 @@ def remove_book(id):
         try:
             db.session.delete(book)
             db.session.commit()
-        except:
+        except Exception as error:
+            print(error)
             return 'There was an issue removing the book'       
 
 ## Remove Section

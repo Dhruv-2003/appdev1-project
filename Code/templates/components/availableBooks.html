@@ -16,7 +16,9 @@
         <td><input type="checkbox" /></td>
         <td>{{ book.name }}</td>
         <td>
-          <button type="button">Edit</button>
+          <a href="/librarian/edit_book/{{ book.id }}">
+            <button type="submit" name="action">Edit</button>
+          </a>
           <!-- TODO: assign to open the modal to change the section -->
           <!-- Button trigger modal -->
           <button
@@ -27,7 +29,10 @@
             Assign
           </button>
           <!-- TODO: Remove the book from the db -->
-          <button>❌ Remove</button>
+
+          <form action="/librarian/remove_book/{{ book.id }}" method="POST">
+            <button type="submit" name="action">❌ Remove</button>
+          </form>
         </td>
       </tr>
       {% endfor %}
