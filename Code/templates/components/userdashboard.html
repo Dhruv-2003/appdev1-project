@@ -12,28 +12,23 @@
         </tr>
       </thead>
       <tbody>
+        {% for book in books_borrowed %}
         <tr>
           <th scope="row">1</th>
-          <td>Otto</td>
-          <td>20 Feb 24</td>
-          <td>24 feb 24</td>
-          <td><button>Read</button><button>❌ Return</button></td>
+          <!--TODO: Book Name -->
+          <td>{{ book }}</td>
+          <td>{{ book.date_issued }}</td>
+          <td>{{ book.return_date }}</td>
+          <td>
+            <form action="/user/view_book/{{ book.book_id }}" method="POST">
+              <button type="submit" name="action">Read</button>
+            </form>
+            <form action="/user/return_book/{{ book.book_id }}" method="POST">
+              <button type="submit" name="action">❌ Return</button>
+            </form>
+          </td>
         </tr>
-        <tr>
-          <th scope="row">2</th>
-
-          <td>Jacob</td>
-          <td>20 Feb 24</td>
-          <td>24 feb 24</td>
-          <td><button>Read</button><button>❌ Return</button></td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>Larry</td>
-          <td>20 Feb 24</td>
-          <td>24 feb 24</td>
-          <td><button>Read</button><button>❌ Return</button></td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

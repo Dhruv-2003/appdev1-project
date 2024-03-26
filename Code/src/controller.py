@@ -249,8 +249,11 @@ def user_login():
 @app.route('/user/dashboard')
 # @login_required
 def user_dashboard():
+    user_id = 1;
+    user = User.query.get_or_404(user_id)
+    books_borrowed = user.books_borrowed
     ## get the data for the user which is connected
-    return render_template('user/dashboard.html')
+    return render_template('user/dashboard.html' , books_borrowed = books_borrowed)
 
 ### BOOK ROUTES
 
@@ -289,7 +292,7 @@ def book(id):
 # @login_required
 # Check if user does own this book
 def view_book(id):
-    # book = Book.query.get_or_404(id)
+    book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
     ## If yes, then render the view_book.html
     ## Else, redirect to the book page
@@ -300,7 +303,7 @@ def view_book(id):
 # @login_required
 # Check if user does own this book
 def read_book(id):
-    # book = Book.query.get_or_404(id)
+    book = Book.query.get_or_404(id)
     ## Check if the book is indeed issued to the user
     ## If yes, then render the view_book.html
     ## Else, redirect to the book page
@@ -316,13 +319,15 @@ def review_book(id):
         ## Check if the book is indeed issued to the user
         ## If yes, then render the view_book.html
         ## Else, redirect to the book page
-        user_id = request.form['user_id']
+        ## TODO: get user id from current_user
+        user_id = 1
         book_id = id
-        content = request.form['content']
+        content = request.form['review']
         review = Review(user_id=user_id, book_id=book_id, content=content)
         try:
             db.session.add(review)
             db.session.commit()
+            return redirect(url_for('view_book', id=id))
         except:
             return 'There was an issue adding the review'
 
@@ -376,7 +381,7 @@ def reject_book(id):
         
           
 ## Return book
-@app.route('/librarian/return_book/<int:id>', methods=['POST'])
+@app.route('/user/return_book/<int:id>', methods=['POST'])
 # @login_required
 # @librarian_required
 def return_book(id):
@@ -396,6 +401,7 @@ def return_book(id):
        
         try:
             db.session.commit()
+            return redirect(url_for('user_dashboard'))
         except:
             return 'There was an issue issuing the book'
        

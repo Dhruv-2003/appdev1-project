@@ -50,6 +50,7 @@ class User(db.Model , UserMixin):
     
     ## relationship - one to many
     books_borrowed = db.relationship('BookIssue', backref='user', lazy=True)
+    reviews = db.relationship('Review', backref='user', lazy=True)
 
 ## SECTION
 # ID PRIMARY KEY , UNIQUE, AUTOINCREMENT, NOT NULL
