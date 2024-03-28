@@ -46,9 +46,18 @@ def librarian_required(func):
 @app.route('/')
 def index():
     books = Book.query.all()
+    available_books = []
+    for book in books:
+        if book.issue:
+            ## TODO: Possibly change this to Available check in the new db
+            if book.issue.status != 'ISSUED':
+                available_books.append(book)
+        else:
+            available_books.append(book)
+
     sections = Section.query.all()
     # fetch all the books directly for all the sections
-    return render_template('index.html', books= books,sections = sections)
+    return render_template('index.html', books= available_books,sections = sections)
 
 ### LIBRARIAN ROUTES
 
@@ -162,7 +171,7 @@ def librarian_add_section():
         ## TODO : get the librarian ID from the serverSide with current_user
         # librarian_id = request.form['librarian_id']
         librarian_id = 1;
-        section = Section(name=name, description=description, librarian_id=librarian_id)
+        section = Section(name=name, description=description, librarian_id=librarian_id, image_filename = cover_image.filename)
         try:
             db.session.add(section)
             db.session.commit()
@@ -191,7 +200,7 @@ def librarian_dashboard():
     books_issued = librarian.books_issues;
     book_requests = []
     currently_issued = []    
-    ## TODO : Get all the requests
+    ## Get all the requests
     ## Filter ones which have a status requested and pass them as book requests    
     ## Filter ones which are currently issued
     for book_issue in books_issued:
@@ -254,6 +263,7 @@ def user_dashboard():
     user = User.query.get_or_404(user_id)
     books_borrowed = user.books_borrowed
     currently_borrowed = []
+    ## TODO : might want to add like older borrowed book section
     for book_borrow in books_borrowed:
         if(book_borrow.status == "ISSUED"):
             currently_borrowed.append(book_borrow)
@@ -268,6 +278,8 @@ def user_dashboard():
 def book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
+        if book.issue:
+            return 'Book already issued'
 
         ## TODO: get from the user ID
         user_id = 1
@@ -403,8 +415,10 @@ def return_book(id):
             return 'Return date passed, book revoked'
        
         book_issue.status = "RETURNED"
+
        
         try:
+            db.session.delete(book_issue)
             db.session.commit()
             return redirect(url_for('user_dashboard'))
         except:
@@ -429,6 +443,7 @@ def revoke_book(id):
         book_issue.status = "REVOKED"
        
         try:
+            db.session.delete(book_issue)
             db.session.commit()
         except:
             return 'There was an issue issuing the book'
@@ -440,6 +455,13 @@ def revoke_book(id):
 def remove_book(id):
     book = Book.query.get_or_404(id)
     if request.method == 'POST':
+        if book.issue:
+            book_issue = BookIssue.query.get_or_404(book.issue.id)
+            try:
+                db.session.delete(book_issue)
+                db.session.commit()
+            except Exception as error:           
+                return 'There was an issue removing the book issue'    
         try:
             db.session.delete(book)
             db.session.commit()

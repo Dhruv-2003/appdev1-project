@@ -66,6 +66,7 @@ class Section(db.Model):
     name = db.Column(db.String(20), nullable=False)
     date_created = db.Column(db.DateTime, default= datetime.now())
     description = db.Column(db.String(100), nullable=False)
+    image_filename = db.Column(db.String(100))
     
     ## relationship - one to many
     books = db.relationship('Book', backref='section', lazy=True)
@@ -96,10 +97,14 @@ class Book(db.Model):
     date_created = db.Column(db.DateTime, nullable=False, default= datetime.now())
     description = db.Column(db.String(100), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
+    image_filename= db.Column(db.String(100))
     
     ## relationship - one to many
     reviews = db.relationship('Review', backref='book', lazy=True)
-    issues =  db.relationship('BookIssue', backref='book', lazy=True)
+
+    ## relationship - one to one
+    issue =  db.relationship('BookIssue',uselist = False, backref='book', lazy=True)
+
 
 ## REVIEW
 # ID PRIMARY KEY , UNIQUE, AUTOINCREMENT, NOT NULL
@@ -131,7 +136,7 @@ class BookIssue(db.Model):
     date_requested = db.Column(db.DateTime, nullable=False, default= datetime.now())
     date_issued = db.Column(db.DateTime)
     return_date = db.Column(db.DateTime)
-    status = db.Column(db.Enum('REQUESTED','REJECTED','ISSUED','RETURNED','REVOKED'), nullable=False)
+    status = db.Column(db.Enum('AVAILABLE','REQUESTED','REJECTED','ISSUED','RETURNED','REVOKED'), nullable=False)
 
 with app.app_context():
     db.create_all()

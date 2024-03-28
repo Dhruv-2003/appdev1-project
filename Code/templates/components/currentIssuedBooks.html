@@ -15,12 +15,12 @@
       <tr>
         <th scope="row">{{ book_issue.id }}</th>
         <td><input type="checkbox" /></td>
-        <!-- TODO: Change Book_issue to book name -->
-        <td>{{ book_issue }}</td>
+        <!-- ✅TODO: Change Book_issue to book name -->
+        <td>{{ book_issue.book.name }}</td>
         <td>{{ book_issue.user.name }}</td>
         <!--TODO: Convert the date  -->
         <td>{{ book_issue.date_issued }}</td>
-        <!--TODO: Revoke the access -->
+        <!--✅TODO: Revoke the access -->
         <td>
           <form
             action="/librarian/revoke_book/{{ book_issue.id }}"
