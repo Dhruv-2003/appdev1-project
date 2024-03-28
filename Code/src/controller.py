@@ -488,14 +488,15 @@ def remove_section(id):
 ## Search book by name
 @app.route('/search_book_by_name', methods=['GET'])
 def search_book_by_name():
-    name = request.form['name']
+    
+    name = request.args['search']
     books = Book.query.filter_by(Book.name.like(f"%{name}%")).all()
     return render_template('index.html', books=books)
         
 ## Search book by author
 @app.route('/search_book_by_author', methods=['GET'])
 def search_book_by_author():
-    author = request.form['author']
+    author =request.args['search']
     books = Book.query.filter_by(Book.authors.like(f"%{author}%")).all()
     return render_template('index.html', books=books)
         

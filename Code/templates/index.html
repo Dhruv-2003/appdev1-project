@@ -14,19 +14,26 @@
       <div class="p-2">E Book store Home</div>
       <div class="flex-gap-12">
         <div class="input-group">
-          <input
-            type="text"
-            id="Search"
-            class="form-control"
-            placeholder="Search"
-            aria-label="Search"
-            aria-describedby="basic-addon2"
-          />
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">
-              Search
-            </button>
-          </div>
+          <form id="searchForm">
+            <input
+              type="text"
+              id="Search"
+              class="form-control"
+              placeholder="Search"
+              aria-label="Search"
+              aria-describedby="basic-addon2"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="submit">
+                Search
+              </button>
+            </div>
+            <select name="search_by">
+              <option value="book_name">Book Name</option>
+              <option value="author_name">Author Name</option>
+              <option value="section_name">Section Name</option>
+            </select>
+          </form>
         </div>
         <button type="button" class="btn btn-light border">Login</button>
         <button type="button" class="btn btn-dark">Signup</button>
@@ -127,5 +134,55 @@
       });
     });
   });
+
+  document
+    .getElementById("searchForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Gather form data
+      const formData = new FormData(document.getElementById("searchForm"));
+      const search_by = document.getElementById("searchForm").value;
+      const searchParams = new URLSearchParams(formData).toString();
+
+      try {
+        let response;
+        if (search_by == "book_name") {
+          response = await fetch(
+            `/search_book_by_name?search=${searchParams}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Add any additional headers if needed
+              },
+            }
+          );
+        } else if (search_by == "author_name") {
+          response = await fetch(
+            `/search_book_by_author?search=${searchParams}?search=${searchParams}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Add any additional headers if needed
+              },
+            }
+          );
+        } else if (search_by == "section_name") {
+          response = await fetch(`/search_book_by_author/${searchParams}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Add any additional headers if needed
+            },
+          });
+        }
+
+        const data = (await response.json()).data;
+      } catch (error) {
+        console.log(error);
+      }
+    });
 </script>
 {% endblock %}
